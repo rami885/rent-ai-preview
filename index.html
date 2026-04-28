@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rental Pro v9 Preview - Built from v6</title>
+<meta name="description" content="Rental Pro v9 Professional preview for rental management, payments, utilities, accounting, alerts, WhatsApp, Wekan, users, and audit logs.">
+<title>Rental Pro v9 Professional Preview</title>
 <style>
 :root{
   --bg:#0b1020;--panel:#101827;--panel2:#152033;--line:#273449;--text:#f4f7fb;--muted:#98a6ba;
@@ -19,9 +20,15 @@ button.secondary{background:#22304a;border:1px solid var(--line)}
 button.good{background:var(--green)}button.warn{background:var(--yellow);color:#111}button.danger{background:var(--red)}
 input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:var(--radius);padding:9px 10px}
 label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}
+.demo-ribbon{position:fixed;top:0;left:0;right:0;z-index:45;background:#0f2745;border-bottom:1px solid #24558a;color:#d9ecff;padding:9px 16px;font-size:12px;display:flex;justify-content:center;gap:8px;align-items:center;text-align:center}
+.demo-ribbon b{color:#fff}.demo-ribbon span{line-height:1.5}
 .login{position:fixed;inset:0;background:#0b1020;z-index:50;display:flex;align-items:center;justify-content:center;padding:18px}
-.login-box{width:430px;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px}
+.login-box{width:520px;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
 .login-box h1{margin:0 0 8px;color:#fff;font-size:24px}.login-box p{margin:0 0 18px;color:var(--muted);line-height:1.7}
+.login-kicker{display:inline-block;margin-bottom:10px;color:var(--cyan);font-size:12px;font-weight:900;text-transform:uppercase}
+.login-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.feature-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.feature-pill{border:1px solid var(--line);background:#0d1728;border-radius:var(--radius);padding:9px;color:var(--muted);font-size:12px;line-height:1.5}
 .side{position:fixed;top:0;right:0;width:var(--side);height:100vh;background:var(--panel);border-left:1px solid var(--line);overflow:auto;z-index:10}
 body.en .side{right:auto;left:0;border-left:0;border-right:1px solid var(--line)}
 .brand{padding:18px;border-bottom:1px solid var(--line)}
@@ -31,13 +38,13 @@ body.en .side{right:auto;left:0;border-left:0;border-right:1px solid var(--line)
 .nav:hover,.nav.active{background:#123158;color:#fff}.nav .mark{width:24px;text-align:center;color:var(--cyan);font-weight:900}
 .main{margin-right:var(--side);min-height:100vh}body.en .main{margin-right:0;margin-left:var(--side)}
 .top{height:64px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:5}
-.content{padding:22px}.page{display:none}.page.active{display:block}
+.content{padding:22px}.page{display:none}.page.active{display:block}.demo-banner{background:#10233a;border:1px solid #24558a;border-radius:var(--radius);padding:13px 15px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.demo-banner b{color:#fff}.demo-banner span{color:#c7dcf5;font-size:13px;line-height:1.6}
 h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:16px}
 .card,.tablebox{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}.card{padding:16px}.label{color:var(--muted);font-size:12px}.value{font-size:25px;font-weight:900;margin-top:7px}.sub{color:var(--muted);font-size:12px;margin-top:7px;line-height:1.6}
 .blue{color:var(--blue)}.cyan{color:var(--cyan)}.green{color:var(--green)}.red{color:var(--red)}.orange{color:var(--orange)}.yellow{color:var(--yellow)}.violet{color:var(--violet)}
 .head{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.tablebox{overflow:auto;margin-bottom:16px}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;text-align:right;white-space:nowrap}body.en th,body.en td{text-align:left}th{background:var(--panel2);color:var(--muted);font-size:11px}
+.tablebox{overflow:auto;margin-bottom:16px}table{width:100%;min-width:840px;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;text-align:right;white-space:nowrap}body.en th,body.en td{text-align:left}th{background:var(--panel2);color:var(--muted);font-size:11px;position:sticky;top:0;z-index:1}
 .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tools>*{width:auto}.form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
 .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800}.b-green{background:rgba(16,185,129,.16);color:var(--green)}.b-red{background:rgba(239,68,68,.16);color:var(--red)}.b-orange{background:rgba(249,115,22,.16);color:var(--orange)}.b-cyan{background:rgba(34,199,217,.16);color:var(--cyan)}.b-violet{background:rgba(139,92,246,.16);color:var(--violet)}.b-yellow{background:rgba(245,158,11,.16);color:var(--yellow)}
 .row-due td{background:rgba(239,68,68,.08)}.row-partial td{background:rgba(249,115,22,.08)}.row-ok td{background:rgba(16,185,129,.07)}.row-empty td{background:rgba(34,199,217,.07)}.row-reserved td{background:rgba(139,92,246,.08)}
@@ -45,20 +52,31 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
 .note{line-height:1.8;color:var(--muted)}.hidden{display:none!important}.menu{display:none}.kbd{font-family:Consolas,monospace;color:var(--cyan)}
 .bars{display:grid;gap:10px}.bar-row{display:grid;grid-template-columns:190px 1fr 120px;gap:10px;align-items:center}.bar-track{height:12px;background:#22304a;border-radius:999px;overflow:hidden}.bar-fill{height:100%;background:var(--blue)}.bar-fill.green{background:var(--green)}.bar-fill.red{background:var(--red)}.bar-fill.orange{background:var(--orange)}
 @media(max-width:980px){.side{transform:translateX(100%);transition:.2s}.side.open{transform:translateX(0)}body.en .side{transform:translateX(-100%)}body.en .side.open{transform:translateX(0)}.main,body.en .main{margin:0}.menu{display:inline-block}.grid,.grid3,.grid2{grid-template-columns:1fr 1fr}}
-@media(max-width:640px){.content{padding:12px}.grid,.grid3,.grid2,.form{grid-template-columns:1fr}.top{padding:0 12px}.tools>*{width:100%}.bar-row{grid-template-columns:1fr}}
+@media(max-width:640px){.content{padding:12px;padding-top:52px}.grid,.grid3,.grid2,.form,.feature-strip,.login-actions{grid-template-columns:1fr}.top{padding:0 12px}.tools>*{width:100%}.bar-row{grid-template-columns:1fr}.demo-ribbon{font-size:11px;padding:8px 10px}.login{padding-top:46px}.login-box{padding:18px}}
 </style>
 </head>
 <body>
+<div class="demo-ribbon"><b>Rental Pro v9</b><span data-ar="نسخة اختبار عامة: البيانات محفوظة في المتصفح فقط، وليست متصلة بعد بقاعدة بيانات Laravel." data-en="Public demo: data is saved in this browser only and is not connected to the Laravel database yet."></span></div>
 <div class="login" id="login">
   <div class="login-box">
+    <span class="login-kicker">Professional Preview</span>
     <h1>Rental Pro v9</h1>
-    <p data-ar="نسخة Preview مبنية من v6 مع الصلاحيات، التنبيهات، الحسابات، والتكاملات. اختر الدور للدخول." data-en="Preview built from v6 with roles, alerts, accounting, and integrations. Choose a role to enter."></p>
+    <p data-ar="نظام احترافي لإدارة الإيجارات: عقارات، مستأجرون، دفعات، فواتير، متأخرات، مصاريف، تأمينات، حسابات، تنبيهات، WhatsApp، Wekan، وصلاحيات." data-en="Professional rental management: properties, tenants, payments, bills, old balances, expenses, deposits, accounting, alerts, WhatsApp, Wekan, and access roles."></p>
+    <div class="feature-strip">
+      <div class="feature-pill" data-ar="لوحة مالية شهرية" data-en="Monthly financial dashboard"></div>
+      <div class="feature-pill" data-ar="حساب كهرباء وماء" data-en="Utility allocation"></div>
+      <div class="feature-pill" data-ar="تنبيهات وأتمتة" data-en="Alerts and automation"></div>
+    </div>
     <label data-ar="الدور" data-en="Role"></label>
     <select id="loginRole">
       <option value="owner">Owner</option><option value="manager">Manager</option><option value="accountant">Accountant</option><option value="rental">Rental Officer</option><option value="maintenance">Maintenance</option><option value="viewer">Viewer</option>
     </select>
     <label data-ar="كلمة المرور" data-en="Password"></label>
     <input id="loginPassword" type="password" placeholder="Demo">
+    <div class="login-actions">
+      <button class="good" onclick="quickLogin('owner')" data-ar="تجربة سريعة كمالك" data-en="Quick demo as Owner"></button>
+      <button class="secondary" onclick="quickLogin('accountant')" data-ar="تجربة كمحاسب" data-en="Demo as Accountant"></button>
+    </div>
     <div class="tools" style="margin-top:12px">
       <button onclick="doLogin()" data-ar="دخول" data-en="Login"></button>
       <button class="secondary" onclick="toggleLang()">AR / EN</button>
@@ -100,6 +118,12 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
   </div>
   <div class="content">
     <section class="page active" id="dashboard">
+      <div class="demo-banner">
+        <span><b data-ar="وضع المعاينة" data-en="Preview mode"></b> <span data-ar="هذه النسخة مناسبة لعرض الفكرة وتجربة سير العمل. النسخة الإنتاجية تستخدم Laravel API وقاعدة بيانات وصلاحيات حقيقية." data-en="This version is for product review and workflow testing. The production version uses the Laravel API, database, and real permissions."></span></span>
+        <div class="tools">
+          <button class="secondary" onclick="go('integrations',document.querySelector('.nav[data-page=integrations]'))" data-ar="ما الذي ستدعمه النسخة الحقيقية؟" data-en="Production integrations"></button>
+        </div>
+      </div>
       <div class="page-title"><h1 data-ar="لوحة القيادة العامة" data-en="Main Dashboard"></h1><div class="tools"><select id="monthFilter" onchange="renderAll()"></select><button class="secondary" onclick="resetDemo()" data-ar="إرجاع بيانات تجريبية" data-en="Reset Demo"></button></div></div>
       <div class="grid">
         <div class="card"><div class="label" data-ar="المطلوب الكامل من المستأجرين" data-en="Total Tenant Amount Due"></div><div class="value green" id="kTotalDue"></div><div class="sub" data-ar="الإيجار + الكهرباء + الماء + المتأخرات" data-en="Rent + electricity + water + old balance"></div></div>
@@ -377,6 +401,7 @@ function applyLang(){
   localStorage.setItem(KEY+'_lang',lang);
 }
 function toggleLang(){lang=lang==='ar'?'en':'ar';applyLang();renderAll()}
+function quickLogin(role){loginRole.value=role;loginPassword.value='demo';doLogin()}
 function doLogin(){currentUser={role:loginRole.value,name:loginRole.options[loginRole.selectedIndex].text};localStorage.setItem(KEY+'_user',JSON.stringify(currentUser));login.classList.add('hidden');applyAccess();logAction('Login as '+currentUser.role);renderAll()}
 function logout(){localStorage.removeItem(KEY+'_user');location.reload()}
 function applyAccess(){
