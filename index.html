@@ -51,6 +51,8 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:30;align-items:center;justify-content:center;padding:18px}.modal-bg.open{display:flex}.modal{background:var(--panel);border:1px solid var(--line);border-radius:10px;width:1080px;max-width:100%;max-height:92vh;overflow:auto;padding:18px}.modal h2{margin:0 0 14px}
 .note{line-height:1.8;color:var(--muted)}.hidden{display:none!important}.menu{display:none}.kbd{font-family:Consolas,monospace;color:var(--cyan)}
 .bars{display:grid;gap:10px}.bar-row{display:grid;grid-template-columns:190px 1fr 120px;gap:10px;align-items:center}.bar-track{height:12px;background:#22304a;border-radius:999px;overflow:hidden}.bar-fill{height:100%;background:var(--blue)}.bar-fill.green{background:var(--green)}.bar-fill.red{background:var(--red)}.bar-fill.orange{background:var(--orange)}
+.contract-preview{background:#fff;color:#111;border-radius:var(--radius);padding:34px;line-height:1.65;font-family:"Times New Roman",serif;font-size:15px}.contract-preview h2{text-align:center;margin:0 0 18px;font-size:20px}.contract-preview p{margin:8px 0}.contract-preview .clause{margin:12px 0}.contract-preview .signature-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.contract-preview .signature-line{border-top:1px solid #111;padding-top:6px;min-height:36px}.contract-preview .muted-line{border-bottom:1px dotted #555;display:inline-block;min-width:170px;padding:0 8px}
+@media print{body{background:#fff;color:#111}.demo-ribbon,.login,.side,.top,.page:not(#contracts),#contractFormPanel,.no-print,.modal-bg{display:none!important}.main,body.en .main{margin:0}.content{padding:0}.page{display:block!important}.tablebox,.card{border:0;background:#fff}.contract-preview{padding:0;border-radius:0;font-size:12pt}.contract-preview .signature-grid{grid-template-columns:1fr 1fr}button{display:none!important}}
 @media(max-width:980px){.side{transform:translateX(100%);transition:.2s}.side.open{transform:translateX(0)}body.en .side{transform:translateX(-100%)}body.en .side.open{transform:translateX(0)}.main,body.en .main{margin:0}.menu{display:inline-block}.grid,.grid3,.grid2{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){.content{padding:12px;padding-top:52px}.grid,.grid3,.grid2,.form,.feature-strip,.login-actions{grid-template-columns:1fr}.top{padding:0 12px}.tools>*{width:100%}.bar-row{grid-template-columns:1fr}.demo-ribbon{font-size:11px;padding:8px 10px}.login{padding-top:46px}.login-box{padding:18px}}
 </style>
@@ -94,6 +96,7 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
   <div class="sec" data-ar="الإيجارات" data-en="Rentals"></div>
   <div class="nav" data-page="properties" onclick="go('properties',this)"><span class="mark">04</span><span data-ar="العقارات والوحدات" data-en="Properties and Units"></span></div>
   <div class="nav" data-page="tenants" onclick="go('tenants',this)"><span class="mark">05</span><span data-ar="المستأجرون" data-en="Tenants"></span></div>
+  <div class="nav" data-page="contracts" onclick="go('contracts',this)"><span class="mark">06A</span><span data-ar="العقود" data-en="Contracts"></span></div>
   <div class="nav" data-page="payments" onclick="go('payments',this)"><span class="mark">06</span><span data-ar="الدفعات والفواتير" data-en="Payments and Bills"></span></div>
   <div class="nav" data-page="oldBalance" onclick="go('oldBalance',this)"><span class="mark">07</span><span data-ar="المتأخرات والترحيل" data-en="Old Balance"></span></div>
   <div class="nav" data-page="expenses" onclick="go('expenses',this)"><span class="mark">08</span><span data-ar="المصاريف" data-en="Expenses"></span></div>
@@ -177,6 +180,46 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
       <div class="tablebox"><table><thead><tr><th data-ar="الاسم الكامل" data-en="Full Name"></th><th data-ar="الموقع" data-en="Location"></th><th data-ar="الإيجار الشهري" data-en="Monthly Rent"></th><th data-ar="كهرباء" data-en="Electricity"></th><th data-ar="ماء" data-en="Water"></th><th data-ar="متأخرات" data-en="Old Balance"></th><th data-ar="الإجمالي" data-en="Total Due"></th><th data-ar="المدفوع" data-en="Paid"></th><th data-ar="المتبقي" data-en="Remaining"></th><th>Security Deposit</th><th data-ar="الحالة" data-en="Status"></th><th data-ar="إجراءات" data-en="Actions"></th></tr></thead><tbody id="tenantsBody"></tbody></table></div>
     </section>
 
+    <section class="page" id="contracts">
+      <div class="page-title no-print">
+        <h1 data-ar="نموذج عقد الإيجار" data-en="Rent Contract Form"></h1>
+        <div class="tools">
+          <button onclick="printContract()" data-ar="طباعة / حفظ PDF" data-en="Print / Save PDF"></button>
+          <button class="secondary" onclick="resetContractForm()" data-ar="إعادة القالب" data-en="Reset Form"></button>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card" id="contractFormPanel">
+          <div class="head"><b data-ar="بيانات العقد" data-en="Contract Details"></b><span class="note" data-ar="املأ الحقول ثم اطبع العقد أو احفظه PDF من نافذة الطباعة." data-en="Fill the fields, then print or save as PDF from the print dialog."></span></div>
+          <div class="form" style="padding:16px">
+            <div><label>Contract Date</label><input id="ctDate" type="date" oninput="renderContract()"></div>
+            <div><label>Load Tenant</label><select id="ctLoadTenant" onchange="loadTenantToContract(this.value)"></select></div>
+            <div><label>Tenant 1 Name</label><input id="ctTenant1" oninput="renderContract()"></div>
+            <div><label>Tenant 1 Passport / ARC No.</label><input id="ctTenant1Id" oninput="renderContract()"></div>
+            <div><label>Tenant 2 Name</label><input id="ctTenant2" oninput="renderContract()"></div>
+            <div><label>Tenant 2 Passport / ARC No.</label><input id="ctTenant2Id" oninput="renderContract()"></div>
+            <div><label>Tenant 3 Name</label><input id="ctTenant3" oninput="renderContract()"></div>
+            <div><label>Tenant 3 Passport / ARC No.</label><input id="ctTenant3Id" oninput="renderContract()"></div>
+            <div class="full"><label>Property Address</label><input id="ctProperty" oninput="renderContract()"></div>
+            <div><label>Flat</label><input id="ctFlat" oninput="renderContract()"></div>
+            <div><label>Room</label><input id="ctRoom" oninput="renderContract()"></div>
+            <div><label>Lease Start</label><input id="ctStart" type="date" oninput="renderContract()"></div>
+            <div><label>Lease End</label><input id="ctEnd" type="date" oninput="renderContract()"></div>
+            <div><label>Monthly Rent EUR</label><input id="ctRent" type="number" oninput="renderContract()"></div>
+            <div><label>Security Deposit EUR</label><input id="ctDeposit" type="number" oninput="renderContract()"></div>
+            <div><label>Quiet Hours</label><input id="ctQuiet" oninput="renderContract()"></div>
+            <div><label>Notice Days</label><input id="ctNotice" type="number" oninput="renderContract()"></div>
+            <div><label>Deposit Return Days</label><input id="ctReturnDays" type="number" oninput="renderContract()"></div>
+            <div><label>Landlord Sign Date</label><input id="ctSignDate" type="date" oninput="renderContract()"></div>
+          </div>
+        </div>
+        <div class="tablebox">
+          <div class="head no-print"><b data-ar="معاينة العقد" data-en="Contract Preview"></b><span class="note">A4 print ready</span></div>
+          <div id="contractPreview" class="contract-preview"></div>
+        </div>
+      </div>
+    </section>
+
     <section class="page" id="payments">
       <div class="page-title"><h1 data-ar="الدفعات والفواتير" data-en="Payments and Bills"></h1><div class="tools"><button onclick="openPaymentEditor()" data-ar="تسجيل دفعة" data-en="Record Payment"></button><button onclick="openBillEditor()" data-ar="إضافة فاتورة رئيسية" data-en="Add Main Bill"></button><button class="secondary" onclick="openUtilityAdjustmentEditor()" data-ar="عداد خاص / إضافة يدوية" data-en="Private Meter / Manual Extra"></button></div></div>
       <div class="tablebox"><div class="head"><b data-ar="دفعات المستأجرين" data-en="Tenant Payments"></b></div><table><thead><tr><th data-ar="المستأجر" data-en="Tenant"></th><th data-ar="الشهر" data-en="Month"></th><th>Payment Date</th><th data-ar="نوع الدفعة" data-en="Payment Type"></th><th data-ar="المبلغ" data-en="Amount"></th><th data-ar="استلمها" data-en="Received By"></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
@@ -246,6 +289,12 @@ h1{font-size:22px;margin:0}.page-title{display:flex;justify-content:space-betwee
     <section class="page" id="automation">
       <div class="page-title"><h1 data-ar="الأتمتة والنسخ الاحتياطي" data-en="Automation and Backup"></h1><div class="tools"><button onclick="runAutomation()" data-ar="تشغيل الآن" data-en="Run Now"></button><input id="importFile" class="hidden" type="file" accept=".json" onchange="importBackup(event)"><button class="secondary" onclick="importFile.click()" data-ar="استعادة Backup" data-en="Restore Backup"></button></div></div>
       <div class="card note" data-ar="الأتمتة هنا اختيارية: كل قاعدة لها مفتاح تشغيل أو إيقاف. التنبيهات يمكن أن تتولد تلقائيا، أما الإرسال إلى WhatsApp أو إنشاء Wekan أو إرسال البريد فلا يتم إلا إذا كانت القاعدة مفعلة." data-en="Automation is optional: every rule can be enabled or disabled. Alerts can be generated automatically; WhatsApp sending, Wekan creation, and email backup only run when enabled."></div><br>
+      <div class="grid3">
+        <div class="card"><div class="label">Production Readiness</div><div class="value green">v9+</div><div class="sub">Laravel starter now moves payment math toward cents-safe calculations.</div></div>
+        <div class="card"><div class="label">Privacy</div><div class="value orange">Required</div><div class="sub">Tenant phone, ID, and contract files must be encrypted before live data.</div></div>
+        <div class="card"><div class="label">Backup</div><div class="value blue">Daily</div><div class="sub">Google Drive export plus database backup retention before launch.</div></div>
+      </div>
+      <div class="tablebox"><div class="head"><b>Production Checklist</b><span class="sub">Security, finance, contracts, and automation gates before real tenants.</span></div><table><thead><tr><th>Area</th><th>Status</th><th>Action</th><th>Risk if skipped</th></tr></thead><tbody id="productionChecklistBody"></tbody></table></div>
       <div class="tablebox"><table><thead><tr><th data-ar="مفعل" data-en="Enabled"></th><th data-ar="القاعدة" data-en="Rule"></th><th data-ar="المشغل" data-en="Trigger"></th><th data-ar="الإجراء" data-en="Action"></th><th data-ar="الدور المسؤول" data-en="Responsible Role"></th></tr></thead><tbody id="automationBody"></tbody></table></div>
     </section>
 
@@ -268,10 +317,10 @@ const KEY='rental_pro_v9_from_v6_preview';
 let lang=localStorage.getItem(KEY+'_lang')||'ar';
 let currentUser=JSON.parse(localStorage.getItem(KEY+'_user')||'null');
 const rolePages={
-  owner:['dashboard','propertyStatus','alerts','properties','tenants','payments','oldBalance','expenses','deposits','cashflow','ledger','profitLoss','whatsapp','wekan','integrations','automation','users','audit'],
-  manager:['dashboard','propertyStatus','alerts','properties','tenants','payments','oldBalance','expenses','deposits','cashflow','profitLoss','whatsapp','wekan','integrations','automation','audit'],
+  owner:['dashboard','propertyStatus','alerts','properties','tenants','contracts','payments','oldBalance','expenses','deposits','cashflow','ledger','profitLoss','whatsapp','wekan','integrations','automation','users','audit'],
+  manager:['dashboard','propertyStatus','alerts','properties','tenants','contracts','payments','oldBalance','expenses','deposits','cashflow','profitLoss','whatsapp','wekan','integrations','automation','audit'],
   accountant:['dashboard','alerts','payments','oldBalance','expenses','deposits','cashflow','ledger','profitLoss','integrations','audit'],
-  rental:['dashboard','propertyStatus','alerts','properties','tenants','payments','oldBalance','whatsapp','audit'],
+  rental:['dashboard','propertyStatus','alerts','properties','tenants','contracts','payments','oldBalance','whatsapp','audit'],
   maintenance:['dashboard','propertyStatus','alerts','expenses','wekan','audit'],
   viewer:['dashboard','propertyStatus','alerts','cashflow','profitLoss']
 };
@@ -528,10 +577,95 @@ function generateWekan(){db.wekan=db.alerts.map(a=>({board:'Rental Pro',list:a.r
 function renderWekan(){wekanBody.innerHTML=db.wekan.map(w=>`<tr><td>${w.board}</td><td>${w.list}</td><td>${w.role}</td><td>${w.title}</td><td>${w.desc}</td><td>${w.status}</td></tr>`).join('')||trEmpty(6,'No tasks')}
 function renderIntegrations(){integrationBody.innerHTML=[['Google Sheets','Backup, restore, and two-way sync','Ready','Needs sheet URL and service account in production'],['Email','Daily backup delivery','Scheduled','Owner chooses email recipients'],['WhatsApp Cloud API','Payment reminders and alerts','Queue','Approval before sending'],['Wekan','Maintenance and collection tasks','Queue','Cards created from alerts'],['Audit Log','Track user actions','Active','Cannot be edited by normal users']].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
 function renderAutomation(){automationBody.innerHTML=db.rules.map(r=>`<tr><td><input type="checkbox" ${r.enabled?'checked':''} onchange="rToggle(${r.id},this.checked)"></td><td>${r.rule}</td><td>${r.trigger}</td><td>${r.action}</td><td>${r.role}</td></tr>`).join('')}
+function renderProductionChecklist(){productionChecklistBody.innerHTML=[
+  ['Money math','Improved','Use cents-safe Laravel calculations and add unit tests for utility split','Wrong balances and tenant disputes'],
+  ['Tenant PII','Required','Encrypt phone, IDs, documents, and contract attachments at rest','GDPR/privacy exposure'],
+  ['Contracts','Required','Keep AR/EN templates versioned and legally reviewed before live signing','Contract enforceability risk'],
+  ['WhatsApp','Queue only','Rate-limit and require approval for real outgoing reminders','Spam/account restriction risk'],
+  ['Backups','Required','Daily database + Google Drive export with retention policy','Data loss']
+].map(r=>`<tr><td>${r[0]}</td><td><span class="badge ${r[1]==='Improved'?'b-green':'b-orange'}">${r[1]}</span></td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}
 function rToggle(id,on){let r=db.rules.find(x=>x.id===id);r.enabled=on;save();logAction((on?'Enable ':'Disable ')+r.rule);renderAutomation()}
 function runAutomation(){if(db.rules.find(r=>r.id===1&&r.enabled))generateAlerts();if(db.rules.find(r=>r.id===4&&r.enabled))generateWhatsApp();if(db.rules.find(r=>r.id===5&&r.enabled))generateWekan();logAction('Run automation manually');renderAll()}
 function renderUsers(){usersBody.innerHTML=db.users.map(u=>`<tr><td>${u.name}</td><td>${u.role}</td><td>${u.permissions}</td><td>${u.status}</td></tr>`).join('')}
 function renderAudit(){auditBody.innerHTML=db.audit.map(a=>`<tr><td>${a.time}</td><td>${a.user}</td><td>${a.action}</td></tr>`).join('')||trEmpty(3,'No audit records yet')}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmtDate(v){if(!v)return '________________';let [y,m,d]=v.split('-');return `${d}/${m}/${y}`}
+function contractField(id,fallback='________________'){let el=document.getElementById(id);return esc(el?.value||fallback)}
+function contractLine(id,fallback='________________'){let v=contractField(id,fallback);return `<span class="muted-line">${v}</span>`}
+function fillContractTenantSelect(){
+  if(!window.ctLoadTenant)return;
+  let current=ctLoadTenant.value;
+  ctLoadTenant.innerHTML='<option value="">Manual contract</option>'+db.tenants.map(t=>`<option value="${t.id}">${esc(t.name)} - ${esc(tUnit(t))}</option>`).join('');
+  ctLoadTenant.value=current;
+}
+function defaultContractData(){
+  return {
+    date:new Date().toISOString().slice(0,10),
+    property:'AIGALEO 1, 2057 Strovolos, Nicosia',
+    flat:'',
+    room:'',
+    start:'2026-05-01',
+    end:'2027-04-30',
+    rent:350,
+    deposit:350,
+    quiet:'22:00 - 08:00',
+    notice:30,
+    returnDays:7
+  };
+}
+function resetContractForm(){
+  let d=defaultContractData();
+  ctDate.value=d.date;ctTenant1.value='';ctTenant1Id.value='';ctTenant2.value='';ctTenant2Id.value='';ctTenant3.value='';ctTenant3Id.value='';
+  ctProperty.value=d.property;ctFlat.value=d.flat;ctRoom.value=d.room;ctStart.value=d.start;ctEnd.value=d.end;ctRent.value=d.rent;ctDeposit.value=d.deposit;ctQuiet.value=d.quiet;ctNotice.value=d.notice;ctReturnDays.value=d.returnDays;ctSignDate.value=d.date;
+  if(window.ctLoadTenant)ctLoadTenant.value='';
+  renderContract();
+}
+function loadTenantToContract(id){
+  if(!id)return;
+  let t=tenant(+id), u=unit(t.unitId), p=prop(u.propertyId);
+  ctTenant1.value=t.name||'';ctTenant1Id.value=t.passport||'';ctRent.value=t.rent||'';ctDeposit.value=t.deposit||'';
+  ctProperty.value=`${p.address||''}, ${p.city||''}`.replace(/^, |, $/g,'')||p.name||'';
+  ctFlat.value=u.flat||'';ctRoom.value=u.room||'';ctStart.value=t.entry||ctStart.value;ctEnd.value=t.exit||ctEnd.value;
+  renderContract();
+}
+function renderContract(){
+  if(!window.contractPreview)return;
+  let tenantRows=[
+    ['1',contractField('ctTenant1'),contractField('ctTenant1Id')],
+    ['2',contractField('ctTenant2',''),contractField('ctTenant2Id','')],
+    ['3',contractField('ctTenant3',''),contractField('ctTenant3Id','')]
+  ].filter((r,i)=>i===0||r[1]||r[2]).map(r=>`<p>${r[0]}. ${r[1]||'____________________________'} &nbsp; Passport/ARC No: ${r[2]||'________________'}</p>`).join('');
+  contractPreview.innerHTML=`
+    <h2>RENTAL AGREEMENT</h2>
+    <p>This Rental Agreement is made and entered into on ${contractLine('ctDate')} by and between:</p>
+    <p><b>Landlord:</b> ARAJ CONSTRUCTION &amp; DEVELOPMENT LTD, Rigenis 12-14, Nicosia 1010</p>
+    <p><b>And Tenants:</b></p>
+    ${tenantRows}
+    <p>(Collectively referred to as "Tenants")</p>
+    <p>The Landlord and Tenants agree as follows:</p>
+    <div class="clause"><b>1. Property.</b> The Landlord agrees to rent to the Tenants the property located at: ${contractLine('ctProperty')} Flat ${contractLine('ctFlat')} Room ${contractLine('ctRoom')}.</div>
+    <div class="clause"><b>2. Term.</b> The lease will begin on ${contractLine('ctStart')} and end on ${contractLine('ctEnd')}. This agreement may be renewed upon mutual agreement.</div>
+    <div class="clause"><b>3. Rent Payment.</b> The monthly rent for the property is ${contractLine('ctRent')} EUR. Rent is due on the first day of each month in cash. All Tenants are jointly and severally responsible for the full rent amount.</div>
+    <div class="clause"><b>4. Security Deposit.</b> A security deposit of ${contractLine('ctDeposit')} EUR is required before moving in. The deposit will be returned within ${contractLine('ctReturnDays')} days after the end of the lease, minus any deductions for damages, unpaid rent, or utilities.</div>
+    <div class="clause"><b>5. Utilities and Other Expenses.</b> Utilities including electricity, water, gas, internet, and sewerage will be paid by the Tenants. Other expenses are handled by the Tenants if damages occur during the lease or are caused by the Tenants. The Landlord is responsible for general maintenance and major repairs.</div>
+    <div class="clause"><b>6. Joint Responsibility.</b> All Tenants are jointly and severally liable for the terms of this agreement. If one Tenant fails to fulfill their obligations, the other Tenants remain responsible.</div>
+    <div class="clause"><b>7. Occupancy.</b> The property shall be occupied only by the Tenants listed in this agreement. Additional occupants and subletting are not allowed.</div>
+    <div class="clause"><b>8. Maintenance and Repairs.</b> Tenants must maintain the property in good condition and report any damages to the Landlord promptly. The Landlord is responsible for major repairs and structural maintenance.</div>
+    <div class="clause"><b>9. Termination.</b> The lease may be terminated by either party with ${contractLine('ctNotice')} days written notice. The lease will be terminated if extra persons are found inside the property, and the Tenants may lose the deposit. The lease will also be terminated if drugs are used or smoked inside the property. Early termination by the Tenants must be communicated at least ${contractLine('ctNotice')} days before leaving, otherwise the deposit may be lost.</div>
+    <div class="clause"><b>10. House Rules.</b> Pets are not allowed. Tenants agree to keep noise levels reasonable, especially during ${contractLine('ctQuiet')}. Tenants must keep the property and its facilities clean, otherwise extra cleaning fees may apply.</div>
+    <div class="clause"><b>11. Signatures.</b> By signing below, all parties agree to the terms of this Agreement.</div>
+    <p><b>Landlord:</b> ARAJ CONSTRUCTION &amp; DEVELOPMENT LTD</p>
+    <div class="signature-grid">
+      <div><p>Date: ${esc(fmtDate(ctSignDate.value))}</p><div class="signature-line">Landlord Signature</div></div>
+      <div><p>${contractField('ctTenant1','Tenant 1')}</p><div class="signature-line">Tenant 1 Signature</div></div>
+      <div><p>${contractField('ctTenant2','Tenant 2')}</p><div class="signature-line">Tenant 2 Signature</div></div>
+      <div><p>${contractField('ctTenant3','Tenant 3')}</p><div class="signature-line">Tenant 3 Signature</div></div>
+      <div><p>Witness 1</p><div class="signature-line"></div></div>
+      <div><p>Witness 2</p><div class="signature-line"></div></div>
+    </div>
+  `;
+}
+function printContract(){renderContract();window.print();logAction('Print contract / save PDF')}
 function showUnit(id){let u=unit(id), t=db.tenants.find(x=>x.unitId===id);openModal('Unit Details',`<div class="grid2"><div class="card"><div class="label">Location</div><div class="value" style="font-size:18px">${unitLabel(u)}</div><div class="sub">${u.note||''}</div></div><div class="card"><div class="label">Status</div><div class="value" style="font-size:18px">${u.status}</div><div class="sub">${t?('Tenant: '+t.name):'No tenant assigned'}</div></div></div><button onclick="openUnitEditor(${id})">${lang==='ar'?'تعديل الوحدة':'Edit Unit'}</button>`)}
 function showBillAllocation(id){
   let b=db.bills.find(x=>x.id===id), lines=utilityAllocationLines(id);
@@ -559,8 +693,8 @@ function openExpenseEditor(){openModal('Add Expense',`<div class="form"><div><la
 function exportBackup(){let blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),data:db},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rental-pro-v9-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();logAction('Export backup')}
 function importBackup(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let x=JSON.parse(r.result);db=x.data||x;save();logAction('Restore backup');renderAll()};r.readAsText(f)}
 function resetDemo(){db=structuredClone(demo);normalizeDb();save();logAction('Reset demo data');renderAll()}
-function renderAll(){applyLang();renderDashboard();renderPropertyStatus();renderUnits();renderTenants();renderPayments();renderOldBalance();renderExpenses();renderDeposits();renderCashflow();renderLedger();renderProfitLoss();renderAlerts();renderWhatsApp();renderWekan();renderIntegrations();renderAutomation();renderUsers();renderAudit()}
-fillMonths();applyLang();if(currentUser){login.classList.add('hidden');applyAccess()}generateAlerts();renderAll();
+function renderAll(){applyLang();renderDashboard();renderPropertyStatus();renderUnits();renderTenants();renderPayments();renderOldBalance();renderExpenses();renderDeposits();renderCashflow();renderLedger();renderProfitLoss();renderAlerts();renderWhatsApp();renderWekan();renderIntegrations();renderAutomation();renderProductionChecklist();renderUsers();renderAudit();fillContractTenantSelect();renderContract()}
+fillMonths();applyLang();resetContractForm();if(currentUser){login.classList.add('hidden');applyAccess()}generateAlerts();renderAll();
 </script>
 </body>
 </html>
